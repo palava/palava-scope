@@ -35,13 +35,13 @@ public interface UnitOfWorkScope extends Scope, Provider<ScopeContext> {
      * 
      * @throws IllegalStateException if the scope is already in progress
      */
-    void enter();
+    void begin();
     
     /**
      * Exits the scope.
      * 
      * @throws IllegalStateException if there is no scoping block in progress
      */
-    void exit();
+    void end();
     
 }

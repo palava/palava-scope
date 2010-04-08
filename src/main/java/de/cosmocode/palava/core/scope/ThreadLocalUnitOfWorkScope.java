@@ -31,23 +31,24 @@ import com.google.common.base.Preconditions;
  *
  * @author Willi Schoenborn
  */
-public final class ThreadUnitOfWorkScope extends AbstractScope<ScopeContext> implements UnitOfWorkScope {
+public final class ThreadLocalUnitOfWorkScope extends AbstractScope<ScopeContext> implements UnitOfWorkScope {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadUnitOfWorkScope.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadLocalUnitOfWorkScope.class);
     
     private final ThreadLocal<ScopeContext> context = new ThreadLocal<ScopeContext>();
     
     @Override
-    public void enter() {
+    public void begin() {
         Preconditions.checkState(context.get() == null, "Scope already entered");
         LOG.trace("Entering {}", this);
         context.set(new SimpleScopeContext());
     }
 
     @Override
-    public void exit() {
+    public void end() {
         Preconditions.checkState(context.get() != null, "No scope block in progress");
         LOG.trace("Exiting {}", this);
+        context.get().clear();
         context.remove();
     }
 
