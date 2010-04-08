@@ -40,6 +40,7 @@ public final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issinglet
     
     @SuppressAjWarnings("adviceDidNotMatch")
     Object around(): unitOfWork() {
+        if (scope.inProgress()) return proceed();
         scope.begin();
         try {
             return proceed();

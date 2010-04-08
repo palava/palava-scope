@@ -38,6 +38,13 @@ public interface UnitOfWorkScope extends Scope, Provider<ScopeContext> {
     void begin();
     
     /**
+     * Checks the current state.
+     * 
+     * @return true if this scope is currently in progress, false otherwise
+     */
+    boolean inProgress();
+    
+    /**
      * Exits the scope.
      * 
      * @throws IllegalStateException if there is no scoping block in progress
