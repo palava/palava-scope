@@ -39,7 +39,7 @@ public final class ThreadLocalUnitOfWorkScope extends AbstractScope<ScopeContext
     
     @Override
     public void begin() {
-        Preconditions.checkState(inProgress(), "Scope already entered");
+        Preconditions.checkState(!inProgress(), "Scope already entered");
         LOG.trace("Entering {}", this);
         context.set(new SimpleScopeContext());
     }
@@ -51,7 +51,7 @@ public final class ThreadLocalUnitOfWorkScope extends AbstractScope<ScopeContext
     
     @Override
     public void end() {
-        Preconditions.checkState(!inProgress(), "No scope block in progress");
+        Preconditions.checkState(inProgress(), "No scope block in progress");
         LOG.trace("Exiting {}", this);
         context.get().clear();
         context.remove();
