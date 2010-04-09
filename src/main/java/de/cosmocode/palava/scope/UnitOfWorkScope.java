@@ -14,23 +14,41 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
  */
 
-package de.cosmocode.palava.core.scope;
+package de.cosmocode.palava.scope;
+
+import com.google.inject.Provider;
+import com.google.inject.Scope;
 
 /**
- * Lifecycle class for scoped objects. The {@link Destroyable#destroy()}
- * method will be called on the end of the surrounding scope.
+ * A custom scope which defines an arbitrary unit of work.
  *
- * @author Detlef Hüttemann
  * @author Willi Schoenborn
  */
-public interface Destroyable {
+public interface UnitOfWorkScope extends Scope, Provider<ScopeContext> {
 
     /**
-     * Runs when the corresponding context gets destroyed.
+     * Enters the scope.
+     * 
+     * @throws IllegalStateException if the scope is already in progress
      */
-    void destroy();
-
+    void begin();
+    
+    /**
+     * Checks the current state.
+     * 
+     * @return true if this scope is currently in progress, false otherwise
+     */
+    boolean inProgress();
+    
+    /**
+     * Exits the scope.
+     * 
+     * @throws IllegalStateException if there is no scoping block in progress
+     */
+    void end();
+    
 }

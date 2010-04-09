@@ -14,28 +14,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package de.cosmocode.palava.core.scope;
+package de.cosmocode.palava.scope;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
+import java.util.Map;
+
+import com.google.common.base.Preconditions;
+import com.google.inject.internal.Maps;
 
 /**
- * Binds the {@link ThreadLocalUnitOfWorkScope} to {@link UnitOfWork}.
+ * Simple implementation of the {@link ScopeContext} interface.
  *
  * @author Willi Schoenborn
  */
-public final class ThreadLocalUnitOfWorkScopeModule implements Module {
+public final class SimpleScopeContext extends AbstractScopeContext {
 
-    @Override
-    public void configure(Binder binder) {
-        final UnitOfWorkScope scope = new ThreadLocalUnitOfWorkScope();
-        binder.requestInjection(scope);
-        binder.bindScope(UnitOfWork.class, scope);
-        binder.bind(UnitOfWorkScope.class).toInstance(scope);
+    private final Map<Object, Object> context;
+
+    public SimpleScopeContext(Map<Object, Object> context) {
+        this.context = Preconditions.checkNotNull(context);
     }
-
+    
+    public SimpleScopeContext() {
+        this(Maps.newHashMap());
+    }
+    
+    @Override
+    protected Map<Object, Object> context() {
+        return context;
+    }
+    
 }

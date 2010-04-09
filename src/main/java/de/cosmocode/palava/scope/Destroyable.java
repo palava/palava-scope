@@ -14,31 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package de.cosmocode.palava.core.scope;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import com.google.inject.ScopeAnnotation;
+package de.cosmocode.palava.scope;
 
 /**
- * A method annotation which can be used to flag methods
- * for aop injection.
+ * Lifecycle class for scoped objects. The {@link Destroyable#destroy()}
+ * method will be called on the end of the surrounding scope.
  *
+ * @author Detlef Hüttemann
  * @author Willi Schoenborn
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({
-    ElementType.TYPE,
-    ElementType.METHOD
-})
-@ScopeAnnotation
-public @interface UnitOfWork {
+public interface Destroyable {
+
+    /**
+     * Runs when the corresponding context gets destroyed.
+     */
+    void destroy();
 
 }

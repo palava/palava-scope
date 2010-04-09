@@ -18,37 +18,27 @@
  * MA  02110-1301, USA.
  */
 
-package de.cosmocode.palava.core.scope;
+package de.cosmocode.palava.scope;
 
-import com.google.inject.Provider;
-import com.google.inject.Scope;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import com.google.inject.ScopeAnnotation;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A method annotation which can be used to flag methods
+ * for aop injection.
  *
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope, Provider<ScopeContext> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({
+    ElementType.TYPE,
+    ElementType.METHOD
+})
+@ScopeAnnotation
+public @interface UnitOfWork {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
-    
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean inProgress();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
-    
 }
