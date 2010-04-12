@@ -21,6 +21,8 @@
 package de.cosmocode.palava.scope;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
@@ -29,6 +31,8 @@ import de.cosmocode.palava.core.aop.AbstractPalavaAspect;
 
 final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UnitOfWorkScope.class);
+    
     private UnitOfWorkScope scope;
     
     @Inject
@@ -40,12 +44,19 @@ final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
     
     @SuppressAjWarnings("adviceDidNotMatch")
     Object around(): unitOfWork() {
-        if (scope.inProgress()) return proceed();
-        scope.begin();
-        try {
+        checkState();
+        LOG.trace("Handling UnitOfWorkScope at {}", thisJoinPointStaticPart);
+        if (scope.inProgress()) {
+            LOG.trace("UnitOfWorkScope already in progress");
             return proceed();
-        } finally {
-            scope.end();
+        } else {
+            LOG.trace("UnitOfWorkScope not in progress");
+            scope.begin();
+            try {
+                return proceed();
+            } finally {
+                scope.end();
+            }
         }
     }
     
