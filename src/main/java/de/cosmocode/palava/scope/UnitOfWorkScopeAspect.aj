@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 
 import de.cosmocode.palava.core.aop.AbstractPalavaAspect;
 
-public final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
+final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
 
     private UnitOfWorkScope scope;
     
