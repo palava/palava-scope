@@ -11,12 +11,12 @@
 
     <groupId>de.cosmocode.palava</groupId>
     <artifactId>palava-scope</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <packaging>jar</packaging>
 
     <scm>
-        <developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-scope/trunk</developerConnection>
+        <developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-scope/tags/1.0.0</developerConnection>
     </scm>
 
     <build>
