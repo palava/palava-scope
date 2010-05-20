@@ -35,7 +35,8 @@ public abstract class AbstractScope<S extends ScopeContext> implements Scope, Pr
     private static final Logger LOG = LoggerFactory.getLogger(AbstractScope.class);
     
     @Override
-    public final <T> Provider<T> scope(final Key<T> key, final Provider<T> provider) {
+    public final <T> Provider<T> scope(final Key<T> k, final Provider<T> provider) {
+        final String key = k.toString();
         return new Provider<T>() {
 
             @Override
@@ -47,7 +48,7 @@ public abstract class AbstractScope<S extends ScopeContext> implements Scope, Pr
                         key, AbstractScope.this
                     ));
                 }
-                final T cached = context.<Key<T>, T>get(key);
+                final T cached = context.<String, T>get(key);
                 // is there a cached version?
                 if (cached == null && !context.contains(key)) {
                     final T unscoped = provider.get();
