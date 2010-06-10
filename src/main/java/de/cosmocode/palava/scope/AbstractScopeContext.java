@@ -94,7 +94,7 @@ public abstract class AbstractScopeContext implements ScopeContext {
                     /*CHECKSTYLE:OFF*/
                 } catch (RuntimeException e) {
                     /*CHECKSTYLE:ON*/
-                    LOG.error("Failed to destroy scoped key: {}", e);
+                    LOG.error("Failed to destroy scoped key: " + entry.getKey(), e);
                 }
             }
             if (entry.getValue() instanceof Destroyable) {
@@ -104,7 +104,7 @@ public abstract class AbstractScopeContext implements ScopeContext {
                     /*CHECKSTYLE:OFF*/
                 } catch (RuntimeException e) {
                     /*CHECKSTYLE:ON*/
-                    LOG.error("Failed to destroy scoped value: {}", e);
+                    LOG.error("Failed to destroy scoped value: " + entry.getValue(), e);
                 }
             }
             
