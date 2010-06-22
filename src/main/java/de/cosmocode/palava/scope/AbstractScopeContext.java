@@ -20,9 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 
 
@@ -33,8 +30,6 @@ import com.google.common.base.Preconditions;
  */
 public abstract class AbstractScopeContext implements ScopeContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractScopeContext.class);
-    
     /**
      * Provide the underlying context map. Allows sub classes to 
      * plug-in different map implementations.
@@ -87,26 +82,8 @@ public abstract class AbstractScopeContext implements ScopeContext {
         while (iterator.hasNext()) {
             final Entry<Object, Object> entry = iterator.next();
             
-            if (entry.getKey() instanceof Destroyable) {
-                try {
-                    LOG.trace("Destroying key {}", entry.getKey());
-                    Destroyable.class.cast(entry.getKey()).destroy();
-                    /*CHECKSTYLE:OFF*/
-                } catch (RuntimeException e) {
-                    /*CHECKSTYLE:ON*/
-                    LOG.error("Failed to destroy scoped key: " + entry.getKey(), e);
-                }
-            }
-            if (entry.getValue() instanceof Destroyable) {
-                try {
-                    LOG.trace("Destroying value {}", entry.getValue());
-                    Destroyable.class.cast(entry.getValue()).destroy();
-                    /*CHECKSTYLE:OFF*/
-                } catch (RuntimeException e) {
-                    /*CHECKSTYLE:ON*/
-                    LOG.error("Failed to destroy scoped value: " + entry.getValue(), e);
-                }
-            }
+            Destroyables.destroySilently(entry.getKey());
+            Destroyables.destroySilently(entry.getValue());
             
             iterator.remove();
         }
