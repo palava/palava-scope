@@ -46,11 +46,12 @@ final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
             LOG.trace("UnitOfWorkScope already in progress");
             return proceed();
         } else {
-            LOG.trace("UnitOfWorkScope not in progress");
+            LOG.trace("Beginning of UnitOfWorkScope");
             scope.begin();
             try {
                 return proceed();
             } finally {
+                LOG.trace("Ending UnitOfWorkScope");
                 scope.end();
             }
         }
