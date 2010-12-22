@@ -42,27 +42,27 @@ public abstract class AbstractScopeContext implements ScopeContext {
     public <K, V> void set(K key, V value) {
         Preconditions.checkNotNull(key, "Key");
         context().put(key, value);
-    };
+    }
     
     @Override
     @SuppressWarnings("unchecked")
     public <K, V> V get(K key) {
         Preconditions.checkNotNull(key, "Key");
         return (V) context().get(key);
-    };
+    }
 
     @Override
     public <K> boolean contains(K key) {
         Preconditions.checkNotNull(key, "Key");
         return context().containsKey(key);
-    };
+    }
     
     @Override
     @SuppressWarnings("unchecked")
     public <K, V> V remove(K key) {
         Preconditions.checkNotNull(key, "Key");
         return (V) context().remove(key);
-    };
+    }
     
     @Override
     public <K, V> void putAll(Map<? extends K, ? extends V> map) {
