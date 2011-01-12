@@ -40,5 +40,21 @@ public abstract class AbstractUnitOfWorkScopeTest implements UnitProvider<UnitOf
         unit.end();
         Assert.assertFalse(unit.inProgress());
     }
+
+    /**
+     * Tests whether {@link UnitOfWork} annotation weaving works.
+     */
+    @Test
+    public void weave() {
+        final UnitOfWorkScope unit = unit();
+        Assert.assertFalse(unit.inProgress());
+        scoped(unit);
+        Assert.assertFalse(unit.inProgress());
+    }
+
+    @UnitOfWork
+    private void scoped(UnitOfWorkScope unit) {
+        Assert.assertTrue(unit.inProgress());
+    }
     
 }

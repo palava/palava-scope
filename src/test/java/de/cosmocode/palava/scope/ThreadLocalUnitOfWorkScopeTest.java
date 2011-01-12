@@ -16,6 +16,10 @@
 
 package de.cosmocode.palava.scope;
 
+import com.google.inject.Guice;
+
+import de.cosmocode.palava.core.aop.ReinjectableAspectModule;
+
 /**
  * Tests {@link ThreadLocalUnitOfWorkScope}.
  *
@@ -25,7 +29,10 @@ public final class ThreadLocalUnitOfWorkScopeTest extends AbstractUnitOfWorkScop
 
     @Override
     public UnitOfWorkScope unit() {
-        return new ThreadLocalUnitOfWorkScope();
+        return Guice.createInjector(
+            new ThreadLocalUnitOfWorkScopeModule(),
+            new ReinjectableAspectModule()
+        ).getInstance(UnitOfWorkScope.class);
     }
 
 }
