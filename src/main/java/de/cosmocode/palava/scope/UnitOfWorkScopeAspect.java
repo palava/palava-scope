@@ -16,77 +16,22 @@
 
 package de.cosmocode.palava.scope;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-
-import de.cosmocode.commons.Throwables;
-import de.cosmocode.palava.core.aop.PalavaAspect;
 
 /**
- * An {@link Aspect} which manages {@link UnitOfWorkScope} states required
+ * An {@link Aspect} which manages {@link de.cosmocode.palava.scope.UnitOfWorkScope} required
  * by methods annotated with {@link UnitOfWork}.
  *
  * @since 2.0
  * @author Willi Schoenborn
  */
 @Aspect
-final class UnitOfWorkScopeAspect extends PalavaAspect {
+final class UnitOfWorkScopeAspect extends AbstractUnitOfWorkScopeAspect {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UnitOfWorkScope.class);
-    
-    private UnitOfWorkScope scope;
-    
-    @Inject
-    void setScope(UnitOfWorkScope scope) {
-        this.scope = Preconditions.checkNotNull(scope, "Scope");
-    }
-    
+    @Override
     @Pointcut("execution(@de.cosmocode.palava.scope.UnitOfWork * *.*(..))")
-    @SuppressWarnings("unused")
-    private void unitOfWork() { }
-    
-    /**
-     * An advice around all methods annotated with {@link UnitOfWork} which
-     * handles the correct usage of the {@link UnitOfWorkScope}.
-     *
-     * @since 1.3
-     * @param point the proceeding join point
-     * @return the result returned by the proceeding join point execution
-     */
-    @Around("unitOfWork()")
-    public Object aroundUnitOfWork(ProceedingJoinPoint point) {
-        checkState();
-        LOG.trace("Handling UnitOfWorkScope at {}", point.getStaticPart());
-        if (scope.isActive()) {
-            LOG.trace("UnitOfWorkScope already in progress");
-            return proceed(point);
-        } else {
-            LOG.trace("Beginning managed UnitOfWorkScope");
-            scope.begin();
-            try {
-                return proceed(point);
-            } finally {
-                scope.end();
-                LOG.trace("Ended managed UnitOfWorkScope");
-            }
-        }
-    }
-    
-    private Object proceed(ProceedingJoinPoint point) {
-        try {
-            return point.proceed();
-        /* CHECKSTYLE:OFF */
-        } catch (Throwable e) {
-        /* CHECKSTYLE:ON */
-            throw Throwables.sneakyThrow(e);
-        }
-    }
+    protected void unitOfWork() { }
     
 }
+
