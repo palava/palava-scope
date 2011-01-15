@@ -25,7 +25,7 @@ import com.google.inject.spi.Message;
 /**
  * Indicates one or more errors during {@link MoreScopes#close(com.google.inject.Injector, Class)}.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 final class DestroyException extends RuntimeException {

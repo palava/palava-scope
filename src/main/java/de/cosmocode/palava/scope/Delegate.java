@@ -27,7 +27,7 @@ import com.google.inject.BindingAnnotation;
 /**
  * A binding annotation for delegate {@link UnitOfWorkScope}s.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -21,7 +21,7 @@ import com.google.common.annotations.Beta;
 /**
  * Collected {@link Exception exceptions} occured during destroy attempts.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta
@@ -39,7 +39,7 @@ public interface DestroyErrors {
      * Checks if this collection of errors contains any exception and
      * throws a runtime exception if neccessary.
      *
-     * @since 1.3
+     * @since 2.0
      * @throws RuntimeException if neccessary
      */
     void throwIfNecessary();

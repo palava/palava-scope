@@ -25,7 +25,7 @@ import com.google.inject.Inject;
  * A compound {@link DestroyStrategy} which combines multiple strategies
  * into one.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 final class CompoundDestroyStrategy implements DestroyStrategy {

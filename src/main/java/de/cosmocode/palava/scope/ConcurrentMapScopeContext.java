@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 /**
  * {@link ConcurrentMap} based {@link ScopeContext} implementation.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 public abstract class ConcurrentMapScopeContext extends AbstractScopeContext {

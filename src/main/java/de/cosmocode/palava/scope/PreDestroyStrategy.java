@@ -26,7 +26,7 @@ import com.google.common.annotations.Beta;
 /**
  * A {@link DestroyStrategy} which supports {@link PreDestroy} annotations.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

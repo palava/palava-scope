@@ -21,7 +21,7 @@ import com.google.common.annotations.Beta;
 /**
  * Default {@link ScopeContext} implementation.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

@@ -21,7 +21,7 @@ import com.google.common.annotations.Beta;
 /**
  * A strategy to destroy instances at the end of their scope, e.g. {@link Destroyable}s.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta
@@ -33,7 +33,7 @@ public interface DestroyStrategy {
      * @param object the instance be destroyed
      * @param errors the collected errors
      *
-     * @since 1.3
+     * @since 2.0
      */
     void destroy(Object object, DestroyErrors errors);
 

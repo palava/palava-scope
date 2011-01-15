@@ -24,7 +24,7 @@ import com.google.inject.spi.Message;
 /**
  * Default {@link DestroyErrors} implementation.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 final class DefaultDestroyErrors implements DestroyErrors {

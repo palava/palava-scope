@@ -16,12 +16,15 @@
 
 package de.cosmocode.palava.scope;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.annotations.Beta;
 
 /**
  * A noop {@link DestroyStrategy}.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

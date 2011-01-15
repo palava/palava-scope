@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * The default {@link DestroyStrategy} implementation which checks for
  * {@link Destroyable} instances.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 final class DefaultDestroyStrategy implements DestroyStrategy {

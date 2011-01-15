@@ -23,7 +23,7 @@ import com.google.inject.Module;
 /**
  * Binds {@link UnitOfWorkScope} to {@link SingletonUnitOfWorkScope}.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

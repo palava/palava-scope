@@ -34,7 +34,7 @@ import com.google.inject.Singleton;
 /**
  * A {@link Singleton} based {@link UnitOfWorkScope}.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

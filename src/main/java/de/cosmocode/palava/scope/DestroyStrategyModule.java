@@ -29,7 +29,7 @@ import com.google.inject.multibindings.Multibinder;
  * and a {@link Set} of {@link DestroyStrategy DestroyStrategies} containing
  * the {@link DefaultDestroyStrategy}.
  *
- * @since 1.3
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Beta

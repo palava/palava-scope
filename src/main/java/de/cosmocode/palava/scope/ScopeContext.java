@@ -23,7 +23,7 @@ import com.google.common.annotations.Beta;
 /**
  * A new api in favor of {@link ScopeContext}.
  *
- * @since 1.3
+ * @since 1.0
  * @author Willi Schoenborn
  */
 @Beta

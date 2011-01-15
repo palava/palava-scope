@@ -33,7 +33,7 @@ import de.cosmocode.palava.core.aop.PalavaAspect;
  * An {@link Aspect} which manages {@link UnitOfWorkScope} states required
  * by methods annotated with {@link UnitOfWork}.
  *
- * @since 2.9
+ * @since 2.0
  * @author Willi Schoenborn
  */
 @Aspect
