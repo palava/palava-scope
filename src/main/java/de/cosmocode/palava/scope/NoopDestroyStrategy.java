@@ -32,9 +32,16 @@ public enum NoopDestroyStrategy implements DestroyStrategy {
 
     INSTANCE;
     
+    private static final Logger LOG = LoggerFactory.getLogger(NoopDestroyStrategy.class);
+    
     @Override
-    public void destroy(Object instance, DestroyErrors errors) {
-        // nothing to do
+    public void destroy(Object object, DestroyErrors errors) {
+        LOG.warn("Using {} to \"destroy\" {}", this, object);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
     
 }
