@@ -16,21 +16,30 @@
 
 package de.cosmocode.palava.scope;
 
+import java.util.Set;
+
+import com.google.common.annotations.Beta;
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.Singleton;
+import com.google.inject.multibindings.Multibinder;
 
 /**
- * Binds the {@link ThreadLocalUnitOfWorkScope} to {@link UnitOfWork}.
+ * Binds {@link DestroyStrategy} to {@link CompoundDestroyStrategy}
+ * and a {@link Set} of {@link DestroyStrategy DestroyStrategies} containing
+ * the {@link DefaultDestroyStrategy}.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public final class ThreadLocalUnitOfWorkScopeModule implements Module {
+@Beta
+public final class DestroyStrategyModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        final UnitOfWorkScope scope = new ThreadLocalUnitOfWorkScope();
-        binder.bindScope(UnitOfWork.class, scope);
-        binder.bind(UnitOfWorkScope.class).toInstance(scope);
+        binder.bind(DestroyStrategy.class).to(CompoundDestroyStrategy.class).in(Singleton.class);
+        final Multibinder<DestroyStrategy> multibinder = Multibinder.newSetBinder(binder, DestroyStrategy.class);
+        multibinder.addBinding().to(DefaultDestroyStrategy.class).in(Singleton.class);
     }
 
 }

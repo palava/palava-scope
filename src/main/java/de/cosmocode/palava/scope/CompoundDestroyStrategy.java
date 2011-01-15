@@ -16,34 +16,32 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import java.util.Set;
+
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A compound {@link DestroyStrategy} which combines multiple strategies
+ * into one.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+final class CompoundDestroyStrategy implements DestroyStrategy {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+    private final Iterable<DestroyStrategy> strategies;
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
+    @Inject
+    CompoundDestroyStrategy(Set<DestroyStrategy> strategies) {
+        this.strategies = Preconditions.checkNotNull(strategies, "Strategies");
+    }
     
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
-    
+    @Override
+    public void destroy(Object instance, DestroyErrors errors) {
+        for (DestroyStrategy strategy : strategies) {
+            strategy.destroy(instance, errors);
+        }
+    }
+
 }

@@ -16,34 +16,26 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import com.google.common.annotations.Beta;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A strategy to destroy instances at the end of their scope, e.g. {@link Destroyable}s.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+@Beta
+public interface DestroyStrategy {
 
     /**
-     * Enters the scope.
+     * Attempts to destroy the given instance if this strategy applies.
      * 
-     * @throws IllegalStateException if the scope is already in progress
+     * @param object the instance be destroyed
+     * @param errors the collected errors
+     *
+     * @since 1.3
      */
-    void begin();
-    
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
-    
+    void destroy(Object object, DestroyErrors errors);
+
 }
+

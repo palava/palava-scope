@@ -19,6 +19,7 @@ package de.cosmocode.palava.scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Key;
 import com.google.inject.OutOfScopeException;
 import com.google.inject.Provider;
@@ -28,46 +29,72 @@ import com.google.inject.Scope;
  * Abstract skeleton implementation of the {@link Scope} interface.
  *
  * @author Willi Schoenborn
- * @param <S> the generic scope context type
  */
-public abstract class AbstractScope<S extends ScopeContext> implements Scope, Provider<S> {
+public abstract class AbstractScope implements Scope {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractScope.class);
     
     @Override
-    public final <T> Provider<T> scope(final Key<T> k, final Provider<T> provider) {
-        final String key = k.toString();
-        return new Provider<T>() {
+    public final <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
+        return new ScopedProvider<T>(key, unscoped);
+    }
 
-            @Override
-            public T get() {
-                LOG.trace("Intercepting scoped request with {} to {}", key, provider);
-                final ScopeContext context = AbstractScope.this.get();
-                if (context == null) {
-                    throw new OutOfScopeException(String.format("Can't access %s outside of a %s block", 
-                        key, AbstractScope.this
-                    ));
-                }
-                final T cached = context.<String, T>get(key);
-                // is there a cached version?
-                if (cached == null && !context.contains(key)) {
-                    final T unscoped = provider.get();
-                    context.set(key, unscoped);
-                    LOG.trace("No cached version for {} found, created {}", key, unscoped);
-                    return unscoped;
-                } else {
-                    LOG.trace("Found cached version for {}: {}", key, cached);
-                    return cached;
-                }
+    /**
+     * {@link Provider} implementation which handles the scoping of this scope.
+     *
+     * @since 1.3
+     * @author Willi Schoenborn
+     * @param <T> generic target type
+     */
+    private final class ScopedProvider<T> implements Provider<T> {
+        
+        private final String key;
+        private final Provider<T> unscoped;
+
+        private ScopedProvider(Key<T> key, Provider<T> unscoped) {
+            this.key = Preconditions.checkNotNull(key, "Key").toString();
+            this.unscoped =  Preconditions.checkNotNull(unscoped, "Unscoped");
+        }
+        
+        @Override
+        public T get() {
+            LOG.trace("Intercepting scoped request with {} to {}", key, unscoped);
+            final ScopeContext context = getContext();
+            
+            if (context == null) {
+                throw new OutOfScopeException(
+                    "Can't access " + key + " outside of a " + AbstractScope.this + " block" 
+                );
             }
             
-            @Override
-            public String toString() {
-                return String.format("%s[%s]", provider, AbstractScope.this);
+            @SuppressWarnings("unchecked")
+            final T scoped = (T) context.get(key);
+            
+            // is there a scoped version?
+            if (scoped == null && !context.containsKey(key)) {
+                final T value = unscoped.get();
+                context.putIfAbsent(key, value);
+                LOG.trace("No scoped version for {} found, created {}", key, value);
+                return value;
+            } else {
+                LOG.trace("Found scoped version for {}: {}", key, scoped);
+                return scoped;
             }
+        }
 
-        };
+        @Override
+        public String toString() {
+            return unscoped + " in " + AbstractScope.this;
+        }
     }
+    
+    /**
+     * Provides the underlying {@link ScopeContext} of this scope.
+     *
+     * @since 1.3
+     * @return the scoping context
+     */
+    protected abstract ScopeContext getContext();
     
     @Override
     public String toString() {

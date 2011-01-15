@@ -16,21 +16,32 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
+import java.util.Collections;
+
+import com.google.inject.internal.Errors;
+import com.google.inject.spi.Message;
 
 /**
- * Binds the {@link ThreadLocalUnitOfWorkScope} to {@link UnitOfWork}.
+ * Default {@link DestroyErrors} implementation.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public final class ThreadLocalUnitOfWorkScopeModule implements Module {
+final class DefaultDestroyErrors implements DestroyErrors {
+    
+    private final Errors errors = new Errors();
 
     @Override
-    public void configure(Binder binder) {
-        final UnitOfWorkScope scope = new ThreadLocalUnitOfWorkScope();
-        binder.bindScope(UnitOfWork.class, scope);
-        binder.bind(UnitOfWorkScope.class).toInstance(scope);
+    public void destroyError(Object object, Exception cause) {
+        final String message = Errors.format("Failed to close %s", object);
+        errors.addMessage(new Message(Collections.emptyList(), message, cause));
+    }
+
+    @Override
+    public void throwIfNecessary() {
+        if (errors.hasErrors()) {
+            throw new DestroyException(errors.getMessages());
+        }
     }
 
 }

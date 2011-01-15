@@ -16,77 +16,15 @@
 
 package de.cosmocode.palava.scope;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.google.common.base.Preconditions;
-
+import com.google.common.collect.ForwardingConcurrentMap;
 
 /**
- * Abstract skeleton implementation of the {@link ScopeContext} interface.
+ * Abstract {@link ScopeContext} implementation.
  *
+ * @since 2.0
  * @author Willi Schoenborn
  */
-public abstract class AbstractScopeContext implements ScopeContext {
+public abstract class AbstractScopeContext extends ForwardingConcurrentMap<Object, Object> 
+    implements ScopeContext {
 
-    /**
-     * Provide the underlying context map. Allows sub classes to 
-     * plug-in different map implementations.
-     * 
-     * @return a context map
-     */
-    protected abstract Map<Object, Object> context();
-
-    @Override
-    public <K, V> void set(K key, V value) {
-        Preconditions.checkNotNull(key, "Key");
-        context().put(key, value);
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public <K, V> V get(K key) {
-        Preconditions.checkNotNull(key, "Key");
-        return (V) context().get(key);
-    }
-
-    @Override
-    public <K> boolean contains(K key) {
-        Preconditions.checkNotNull(key, "Key");
-        return context().containsKey(key);
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public <K, V> V remove(K key) {
-        Preconditions.checkNotNull(key, "Key");
-        return (V) context().remove(key);
-    }
-    
-    @Override
-    public <K, V> void putAll(Map<? extends K, ? extends V> map) {
-        Preconditions.checkNotNull(map, "Map");
-        context().putAll(map);
-    }
-    
-    @Override
-    public Iterator<Entry<Object, Object>> iterator() {
-        return context().entrySet().iterator();
-    }
-    
-    @Override
-    public void clear() {
-        final Iterator<Entry<Object, Object>> iterator = iterator();
-        
-        while (iterator.hasNext()) {
-            final Entry<Object, Object> entry = iterator.next();
-            
-            Destroyables.destroySilently(entry.getKey());
-            Destroyables.destroySilently(entry.getValue());
-            
-            iterator.remove();
-        }
-    }
-    
 }

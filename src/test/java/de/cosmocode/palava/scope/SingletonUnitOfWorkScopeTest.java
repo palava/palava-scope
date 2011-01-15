@@ -16,31 +16,26 @@
 
 package de.cosmocode.palava.scope;
 
-import java.util.Map;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
-import com.google.common.base.Preconditions;
-import com.google.inject.internal.Maps;
+import de.cosmocode.palava.core.aop.ReinjectableAspectModule;
 
 /**
- * Simple implementation of the {@link ScopeContext} interface.
+ * Tests {@link SingletonUnitOfWorkScope}.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public final class SimpleScopeContext extends AbstractScopeContext {
+public final class SingletonUnitOfWorkScopeTest extends AbstractUnitOfWorkScopeTest {
 
-    private final Map<Object, Object> context;
-
-    public SimpleScopeContext(Map<Object, Object> context) {
-        this.context = Preconditions.checkNotNull(context);
-    }
-    
-    public SimpleScopeContext() {
-        this(Maps.newHashMap());
-    }
-    
     @Override
-    protected Map<Object, Object> context() {
-        return context;
+    public Injector unit() {
+        return Guice.createInjector(
+            new SingletonUnitOfWorkScopeModule(),
+            new ReinjectableAspectModule(),
+            new DestroyStrategyModule()
+        );
     }
-    
+
 }

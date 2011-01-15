@@ -16,34 +16,28 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import java.util.Collections;
+import java.util.List;
+
+import com.google.inject.internal.Errors;
+import com.google.inject.spi.Message;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * Indicates one or more errors during {@link MoreScopes#close(com.google.inject.Injector, Class)}.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+final class DestroyException extends RuntimeException {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+    private static final long serialVersionUID = 2065909913574478493L;
+
+    DestroyException(List<Message> messages) {
+        super(Errors.format("Destroy errors", messages));
+    }
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
+    DestroyException(Exception e) {
+        this(Collections.singletonList(new Message(Collections.emptyList(), e.getMessage(), e)));
+    }
     
 }

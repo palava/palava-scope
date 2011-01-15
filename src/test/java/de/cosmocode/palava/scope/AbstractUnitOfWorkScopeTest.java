@@ -19,6 +19,8 @@ package de.cosmocode.palava.scope;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.inject.Injector;
+
 import de.cosmocode.junit.UnitProvider;
 
 /**
@@ -26,35 +28,49 @@ import de.cosmocode.junit.UnitProvider;
  *
  * @author Willi Schoenborn
  */
-public abstract class AbstractUnitOfWorkScopeTest implements UnitProvider<UnitOfWorkScope> {
+public abstract class AbstractUnitOfWorkScopeTest implements UnitProvider<Injector> {
 
     /**
-     * Tests {@link UnitOfWorkScope#inProgress()}.
+     * Tests {@link UnitOfWorkScope#isActive()}.
      */
     @Test
-    public void inProgress() {
-        final UnitOfWorkScope unit = unit();
-        Assert.assertFalse(unit.inProgress());
+    public void manual() {
+        final UnitOfWorkScope unit = unit().getInstance(UnitOfWorkScope.class);
+        Assert.assertFalse(unit.isActive());
         unit.begin();
-        Assert.assertTrue(unit.inProgress());
+        Assert.assertTrue(unit.isActive());
         unit.end();
-        Assert.assertFalse(unit.inProgress());
+        Assert.assertFalse(unit.isActive());
     }
 
     /**
      * Tests whether {@link UnitOfWork} annotation weaving works.
      */
     @Test
-    public void weave() {
-        final UnitOfWorkScope unit = unit();
-        Assert.assertFalse(unit.inProgress());
-        scoped(unit);
-        Assert.assertFalse(unit.inProgress());
+    public void managed() {
+        final UnitOfWorkScope unit = unit().getInstance(UnitOfWorkScope.class);
+        Assert.assertFalse(unit.isActive());
+        weaved(unit);
+        Assert.assertFalse(unit.isActive());
     }
 
     @UnitOfWork
-    private void scoped(UnitOfWorkScope unit) {
-        Assert.assertTrue(unit.inProgress());
+    private void weaved(UnitOfWorkScope unit) {
+        Assert.assertTrue(unit.isActive());
+    }
+    
+    /**
+     * Tests {@link DestroyStrategy}.
+     */
+    @Test
+    public void destroy() {
+        final Injector injector = unit();
+        final UnitOfWorkScope unit = injector.getInstance(UnitOfWorkScope.class);
+        unit.begin();
+        final DestroyableService service = injector.getInstance(DestroyableService.class);
+        Assert.assertFalse(service.isDestroyed());
+        unit.end();
+        Assert.assertTrue(service.isDestroyed());
     }
     
 }

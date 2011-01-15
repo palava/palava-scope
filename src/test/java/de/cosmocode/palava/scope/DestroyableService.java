@@ -16,34 +16,24 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
-
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A simple service to test correct {@link Destroyable} behaviour.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
-
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+@UnitOfWork
+public final class DestroyableService implements Destroyable {
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
+    private boolean destroyed;
     
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
+    @Override
+    public void destroy() {
+        this.destroyed = true;
+    }
+    
+    public boolean isDestroyed() {
+        return destroyed;
+    }
     
 }

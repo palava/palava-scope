@@ -16,34 +16,25 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import com.google.common.annotations.Beta;
+import com.google.inject.Binder;
+import com.google.inject.Module;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * Binds {@link UnitOfWorkScope} to {@link SingletonUnitOfWorkScope}.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+@Beta
+public final class SingletonUnitOfWorkScopeModule implements Module {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
-    
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
-    
+    @Override
+    public void configure(Binder binder) {
+        final UnitOfWorkScope scope = new SingletonUnitOfWorkScope();
+        binder.bindScope(UnitOfWork.class, scope);
+        binder.bind(UnitOfWorkScope.class).toInstance(scope);
+    }
+
 }
+

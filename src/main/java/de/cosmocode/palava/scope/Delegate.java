@@ -16,34 +16,27 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import com.google.common.annotations.Beta;
+import com.google.inject.BindingAnnotation;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A binding annotation for delegate {@link UnitOfWorkScope}s.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({
+    ElementType.METHOD,
+    ElementType.PARAMETER
+})
+@BindingAnnotation
+@Beta
+public @interface Delegate {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
-    
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
-    
 }

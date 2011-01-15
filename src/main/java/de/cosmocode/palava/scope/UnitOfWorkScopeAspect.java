@@ -64,7 +64,7 @@ final class UnitOfWorkScopeAspect extends PalavaAspect {
     public Object aroundUnitOfWork(ProceedingJoinPoint point) {
         checkState();
         LOG.trace("Handling UnitOfWorkScope at {}", point.getStaticPart());
-        if (scope.inProgress()) {
+        if (scope.isActive()) {
             LOG.trace("UnitOfWorkScope already in progress");
             return proceed(point);
         } else {
@@ -73,8 +73,8 @@ final class UnitOfWorkScopeAspect extends PalavaAspect {
             try {
                 return proceed(point);
             } finally {
-                LOG.trace("Ending managed UnitOfWorkScope");
                 scope.end();
+                LOG.trace("Ended managed UnitOfWorkScope");
             }
         }
     }

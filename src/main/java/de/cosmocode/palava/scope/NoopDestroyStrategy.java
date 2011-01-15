@@ -16,34 +16,22 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import com.google.common.annotations.Beta;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A noop {@link DestroyStrategy}.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+@Beta
+public enum NoopDestroyStrategy implements DestroyStrategy {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+    INSTANCE;
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
+    @Override
+    public void destroy(Object instance, DestroyErrors errors) {
+        // nothing to do
+    }
     
 }

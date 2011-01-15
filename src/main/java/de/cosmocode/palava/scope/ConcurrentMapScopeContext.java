@@ -16,34 +16,35 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import java.util.concurrent.ConcurrentMap;
+
+import com.google.common.collect.Maps;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * {@link ConcurrentMap} based {@link ScopeContext} implementation.
  *
+ * @since 1.3
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+public abstract class ConcurrentMapScopeContext extends AbstractScopeContext {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+    private ConcurrentMap<Object, Object> context;
+
+    @Override
+    protected final ConcurrentMap<Object, Object> delegate() {
+        if (context == null) {
+            context = Maps.newConcurrentMap();
+        }
+        return context;
+    }
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
+    @Override
+    public void clear() {
+        if (context == null) {
+            return;
+        } else {
+            context.clear();
+        }
+    }
     
 }

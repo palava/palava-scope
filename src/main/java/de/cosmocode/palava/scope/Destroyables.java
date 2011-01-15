@@ -63,7 +63,6 @@ public final class Destroyables {
                 /*CHECKSTYLE:ON*/
                 LOG.error("Failed to destroy: " + object, e);
             }
-            
         }
     }
     

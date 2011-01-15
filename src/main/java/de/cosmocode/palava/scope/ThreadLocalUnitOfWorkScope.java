@@ -20,40 +20,59 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 
 /**
  * A {@link ThreadLocal} based {@link UnitOfWorkScope} implementation.
  *
  * @author Willi Schoenborn
  */
-public final class ThreadLocalUnitOfWorkScope extends AbstractScope<ScopeContext> implements UnitOfWorkScope {
+final class ThreadLocalUnitOfWorkScope extends AbstractScope implements UnitOfWorkScope {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThreadLocalUnitOfWorkScope.class);
     
     private final ThreadLocal<ScopeContext> context = new ThreadLocal<ScopeContext>();
     
+    private DestroyStrategy strategy = NoopDestroyStrategy.INSTANCE;
+    
+    @Inject(optional = true)
+    void setStrategy(DestroyStrategy strategy) {
+        this.strategy = Preconditions.checkNotNull(strategy, "Strategy");
+    }
+    
     @Override
     public void begin() {
-        Preconditions.checkState(!inProgress(), "Scope already entered");
+        Preconditions.checkState(!isActive(), "%s already entered", this);
         LOG.trace("Entering {}", this);
-        context.set(new SimpleScopeContext());
+        context.set(new DefaultScopeContext());
     }
 
     @Override
-    public boolean inProgress() {
+    public boolean isActive() {
         return context.get() != null;
     }
     
     @Override
     public void end() {
-        Preconditions.checkState(inProgress(), "No scope block in progress");
+        Preconditions.checkState(isActive(), "No %s block in progress", this);
         LOG.trace("Exiting {}", this);
-        context.get().clear();
+        
+        final DestroyErrors errors = new DefaultDestroyErrors();
+        final ScopeContext currentContext = context.get();
+        
+        for (Object value : currentContext.values()) {
+            strategy.destroy(value, errors);
+        }
+        
+        currentContext.clear();
         context.remove();
+        
+        errors.throwIfNecessary();
+        LOG.trace("Successfully exited {}", this);
     }
 
     @Override
-    public ScopeContext get() {
+    protected ScopeContext getContext() {
         return context.get();
     }
 

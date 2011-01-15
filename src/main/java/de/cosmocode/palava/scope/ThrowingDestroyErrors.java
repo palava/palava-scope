@@ -16,34 +16,29 @@
 
 package de.cosmocode.palava.scope;
 
-import com.google.inject.Scope;
+import com.google.common.base.Throwables;
 
 /**
- * A custom scope which defines an arbitrary unit of work.
+ * A reusable {@link DestroyErrors} implementations which directly throws
+ * a {@link DestroyException} when {@link #destroyError(Object, Exception)}
+ * is called. This is particularly useful when only one Strategy is used.
  *
+ * @since 
  * @author Willi Schoenborn
  */
-public interface UnitOfWorkScope extends Scope {
+enum ThrowingDestroyErrors implements DestroyErrors {
 
-    /**
-     * Enters the scope.
-     * 
-     * @throws IllegalStateException if the scope is already in progress
-     */
-    void begin();
+    INSTANCE;
+
+    @Override
+    public void destroyError(Object object, Exception cause) {
+        Throwables.propagateIfInstanceOf(cause, DestroyException.class);
+        throw new DestroyException(cause);
+    }
     
-    /**
-     * Checks the current state.
-     * 
-     * @return true if this scope is currently in progress, false otherwise
-     */
-    boolean isActive();
-    
-    /**
-     * Exits the scope.
-     * 
-     * @throws IllegalStateException if there is no scoping block in progress
-     */
-    void end();
+    @Override
+    public void throwIfNecessary() {
+        // nothing to do
+    }
     
 }
