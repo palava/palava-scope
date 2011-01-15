@@ -16,6 +16,7 @@
 
 package de.cosmocode.palava.scope;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MapEvictionListener;
 import com.google.common.collect.MapMaker;
-import com.google.inject.Inject;
+import com.google.common.collect.Sets;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
@@ -38,23 +39,30 @@ import com.google.inject.Singleton;
  * @author Willi Schoenborn
  */
 @Beta
-final class SingletonUnitOfWorkScope implements UnitOfWorkScope, MapEvictionListener<Object, Boolean> {
+final class SingletonUnitOfWorkScope extends AbstractUnitOfWorkScope 
+    implements MapEvictionListener<Object, Boolean> {
     
     private static final Logger LOG = LoggerFactory.getLogger(SingletonUnitOfWorkScope.class);
 
-    private final ConcurrentMap<Object, Boolean> scoped;
-    
-    private DestroyStrategy strategy = NoopDestroyStrategy.INSTANCE;
+    private final Set<Object> context;
     private boolean active;
     
     SingletonUnitOfWorkScope() {
         // weak keys is ok, the singleton scope is keeping the reference
-        this.scoped = new MapMaker().weakKeys().evictionListener(this).makeMap();
+        final ConcurrentMap<Object, Boolean> map = new MapMaker().weakKeys().evictionListener(this).makeMap();
+        this.context = Sets.newSetFromMap(map);
     }
-    
-    @Inject(optional = true)
-    void setStrategy(DestroyStrategy strategy) {
-        this.strategy = Preconditions.checkNotNull(strategy, "Strategy");
+
+    @Override
+    public void begin() {
+        checkNotActive();
+        LOG.trace("Entering {}", this);
+        active = true;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
     
     @Override
@@ -68,51 +76,31 @@ final class SingletonUnitOfWorkScope implements UnitOfWorkScope, MapEvictionList
             @Override
             public T get() {
                 final T instance = provider.get();
-                scoped.putIfAbsent(instance, Boolean.TRUE);
+                context.add(instance);
                 return instance;
             }
             
         };
     }
-
+    
     @Override
-    public void begin() {
-        LOG.trace("Entering {}", this);
-        active = true;
-    }
-
-    @Override
-    public boolean isActive() {
-        return active;
+    public void onEviction(Object value, Boolean ignored) {
+        destroy(value, ThrowingDestroyErrors.INSTANCE);
     }
 
     @Override
     public void end() {
-        Preconditions.checkState(isActive(), "No scope block in progress");
+        checkActive();
         LOG.trace("Exiting {}", this);
-        
-        final DestroyErrors errors = new DefaultDestroyErrors();
-        
-        for (Object value : scoped.keySet()) {
-            strategy.destroy(value, errors); 
+
+        try {
+            destroy(context);
+        } finally {
+            context.clear();
+            active = false;
         }
         
-        scoped.clear();
-        active = false;
-        
-        errors.throwIfNecessary();
-        
         LOG.trace("Successfully exited {}", this);
-    }
-    
-    @Override
-    public void onEviction(Object value, Boolean ignored) {
-        strategy.destroy(value, ThrowingDestroyErrors.INSTANCE); 
-    }
-    
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
     }
     
 }

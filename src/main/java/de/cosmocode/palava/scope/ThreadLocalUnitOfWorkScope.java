@@ -19,32 +19,26 @@ package de.cosmocode.palava.scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
+import com.google.inject.Key;
+import com.google.inject.Provider;
 
 /**
  * A {@link ThreadLocal} based {@link UnitOfWorkScope} implementation.
  *
  * @author Willi Schoenborn
  */
-final class ThreadLocalUnitOfWorkScope extends AbstractScope implements UnitOfWorkScope {
+final class ThreadLocalUnitOfWorkScope extends AbstractUnitOfWorkScope implements SupplyingScope {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThreadLocalUnitOfWorkScope.class);
     
     private final ThreadLocal<ScopeContext> context = new ThreadLocal<ScopeContext>();
     
-    private DestroyStrategy strategy = NoopDestroyStrategy.INSTANCE;
-    
-    @Inject(optional = true)
-    void setStrategy(DestroyStrategy strategy) {
-        this.strategy = Preconditions.checkNotNull(strategy, "Strategy");
-    }
-    
     @Override
     public void begin() {
-        Preconditions.checkState(!isActive(), "%s already entered", this);
+        checkNotActive();
         LOG.trace("Entering {}", this);
         context.set(new DefaultScopeContext());
+        LOG.trace("Entered {}", this);
     }
 
     @Override
@@ -53,27 +47,30 @@ final class ThreadLocalUnitOfWorkScope extends AbstractScope implements UnitOfWo
     }
     
     @Override
-    public void end() {
-        Preconditions.checkState(isActive(), "No %s block in progress", this);
-        LOG.trace("Exiting {}", this);
-        
-        final DestroyErrors errors = new DefaultDestroyErrors();
-        final ScopeContext currentContext = context.get();
-        
-        for (Object value : currentContext.values()) {
-            strategy.destroy(value, errors);
-        }
-        
-        currentContext.clear();
-        context.remove();
-        
-        errors.throwIfNecessary();
-        LOG.trace("Successfully exited {}", this);
+    public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
+        return new ScopingProvider<T>(this, key, unscoped);
     }
 
     @Override
-    protected ScopeContext getContext() {
+    public ScopeContext get() {
         return context.get();
+    }
+    
+    @Override
+    public void end() {
+        checkActive();
+        LOG.trace("Exiting {}", this);
+        
+        final ScopeContext currentContext = context.get();
+        
+        try {
+            destroy(currentContext);
+        } finally {
+            currentContext.clear();
+            context.remove();
+        }
+        
+        LOG.trace("Successfully exited {}", this);
     }
 
 }
