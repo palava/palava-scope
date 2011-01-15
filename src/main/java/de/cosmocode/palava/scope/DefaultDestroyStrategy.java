@@ -34,7 +34,7 @@ final class DefaultDestroyStrategy implements DestroyStrategy {
     public void destroy(Object object, DestroyErrors errors) {
         if (object instanceof Destroyable) {
             try {
-                LOG.trace("Destroying {}", object);
+                LOG.trace("Destroying destroyable {}", object);
                 Destroyable.class.cast(object).destroy();
             /*CHECKSTYLE:OFF*/
             } catch (RuntimeException e) {
