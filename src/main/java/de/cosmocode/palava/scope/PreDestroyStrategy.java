@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.annotations.Beta;
 
 /**
@@ -31,6 +34,8 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 final class PreDestroyStrategy implements DestroyStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PreDestroyStrategy.class);
 
     @Override
     public void destroy(Object object, DestroyErrors errors) {
@@ -52,6 +57,7 @@ final class PreDestroyStrategy implements DestroyStrategy {
     private void invokeIfPossible(Object object, Method method, DestroyErrors errors) {
         if (method.isAnnotationPresent(PreDestroy.class)) {
             try {
+                LOG.trace("Destroying {} using @PreDestroy-annotated method {}", object, method);
                 method.invoke(object);
             } catch (IllegalArgumentException e) {
                 errors.destroyError(object, e);
