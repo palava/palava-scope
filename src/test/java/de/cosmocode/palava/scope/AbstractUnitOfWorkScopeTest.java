@@ -44,22 +44,6 @@ public abstract class AbstractUnitOfWorkScopeTest implements UnitProvider<Inject
     }
 
     /**
-     * Tests whether {@link UnitOfWork} annotation weaving works.
-     */
-    @Test
-    public void managed() {
-        final UnitOfWorkScope unit = unit().getInstance(UnitOfWorkScope.class);
-        Assert.assertFalse(unit.isActive());
-        weaved(unit);
-        Assert.assertFalse(unit.isActive());
-    }
-
-    @UnitOfWork
-    private void weaved(UnitOfWorkScope unit) {
-        Assert.assertTrue(unit.isActive());
-    }
-    
-    /**
      * Tests {@link DestroyStrategy}.
      */
     @Test
