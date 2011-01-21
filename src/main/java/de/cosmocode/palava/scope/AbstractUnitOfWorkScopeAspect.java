@@ -30,7 +30,7 @@ import de.cosmocode.commons.Throwables;
 import de.cosmocode.palava.core.aop.PalavaAspect;
 
 /**
- * An abstract{@link Aspect} which manages {@link UnitOfWorkScope} states.
+ * An abstract {@link Aspect} which manages {@link UnitOfWorkScope} states.
  *
  * @since 2.0
  * @author Willi Schoenborn
