@@ -31,7 +31,9 @@ final class UnitOfWorkScopeAspect extends AbstractUnitOfWorkScopeAspect {
 
     @Override
     @Pointcut("execution(@de.cosmocode.palava.scope.UnitOfWork * *.*(..))")
-    protected void unitOfWork() { }
+    protected void unitOfWork() {
+        
+    }
     
 }
 
