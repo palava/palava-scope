@@ -19,6 +19,7 @@ package de.cosmocode.palava.scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.inject.Key;
 import com.google.inject.OutOfScopeException;
@@ -36,14 +37,20 @@ public final class ScopingProvider<T> implements Provider<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ScopingProvider.class);
     
     private final SupplyingScope scope;
-    private final String key;
+    private final Key<T> key;
     private final Provider<T> unscoped;
+    
+    private Function<? super Key<T>, Object> encoder = new NoopKeyEncoder<T>();
 
     public ScopingProvider(SupplyingScope scope, Key<T> key, Provider<T> unscoped) {
         this.scope = Preconditions.checkNotNull(scope, "Scope");
-        this.key = Preconditions.checkNotNull(key, "Key").toString();
+        this.key = Preconditions.checkNotNull(key, "Key");
         this.unscoped =  Preconditions.checkNotNull(unscoped, "Unscoped");
     }
+    
+    public void setEncoder(Function<? super Key<T>, Object> encoder) {
+		this.encoder = Preconditions.checkNotNull(encoder, "Encoder");
+	}
     
     private void checkInScope(ScopeContext context) {
         if (context == null) {
@@ -56,15 +63,18 @@ public final class ScopingProvider<T> implements Provider<T> {
     @Override
     public T get() {
         final ScopeContext context = scope.get();
+        
         checkInScope(context);
         
+        final Object encoded = encoder.apply(key);
+        
         @SuppressWarnings("unchecked")
-        final T scoped = (T) context.get(key);
+        final T scoped = (T) context.get(encoded);
         
         // is there a scoped version?
-        if (scoped == null && !context.containsKey(key)) {
+        if (scoped == null && !context.containsKey(encoded)) {
             final T value = unscoped.get();
-            context.putIfAbsent(key, value);
+            context.putIfAbsent(encoded, value);
             LOG.trace("No scoped version for {} found, created {}", key, value);
             return value;
         } else {
