@@ -25,6 +25,6 @@ import com.google.inject.Scope;
  * @since 2.0
  * @author Willi Schoenborn
  */
-interface SupplyingScope extends Scope, Supplier<ScopeContext> {
+public interface SupplyingScope extends Scope, Supplier<ScopeContext> {
 
 }

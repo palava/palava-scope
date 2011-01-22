@@ -31,7 +31,7 @@ import com.google.inject.Provider;
  * @author Willi Schoenborn
  * @param <T> generic target type
  */
-final class ScopingProvider<T> implements Provider<T> {
+public final class ScopingProvider<T> implements Provider<T> {
     
     private static final Logger LOG = LoggerFactory.getLogger(ScopingProvider.class);
     
@@ -39,7 +39,7 @@ final class ScopingProvider<T> implements Provider<T> {
     private final String key;
     private final Provider<T> unscoped;
 
-    ScopingProvider(SupplyingScope scope, Key<T> key, Provider<T> unscoped) {
+    public ScopingProvider(SupplyingScope scope, Key<T> key, Provider<T> unscoped) {
         this.scope = Preconditions.checkNotNull(scope, "Scope");
         this.key = Preconditions.checkNotNull(key, "Key").toString();
         this.unscoped =  Preconditions.checkNotNull(unscoped, "Unscoped");
