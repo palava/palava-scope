@@ -21,7 +21,8 @@ import java.util.concurrent.ConcurrentMap;
 import com.google.common.annotations.Beta;
 
 /**
- * A new api in favor of {@link ScopeContext}.
+ * A context for scoped instances used by most custom
+ * scope implementations.
  *
  * @since 1.0
  * @author Willi Schoenborn
