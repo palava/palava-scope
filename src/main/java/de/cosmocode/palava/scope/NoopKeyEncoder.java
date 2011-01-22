@@ -11,9 +11,9 @@ import com.google.inject.Key;
  */
 final class NoopKeyEncoder<T> implements Function<Key<T>, Object> {
 
-	@Override
-	public Object apply(Key<T> input) {
-		return input;
-	}
-	
+    @Override
+    public Object apply(Key<T> input) {
+        return input;
+    }
+    
 }

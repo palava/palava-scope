@@ -49,8 +49,8 @@ public final class ScopingProvider<T> implements Provider<T> {
     }
     
     public void setEncoder(Function<? super Key<T>, Object> encoder) {
-		this.encoder = Preconditions.checkNotNull(encoder, "Encoder");
-	}
+        this.encoder = Preconditions.checkNotNull(encoder, "Encoder");
+    }
     
     private void checkInScope(ScopeContext context) {
         if (context == null) {
