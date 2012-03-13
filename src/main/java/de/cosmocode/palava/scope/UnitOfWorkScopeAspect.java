@@ -16,16 +16,18 @@
 
 package de.cosmocode.palava.scope;
 
-import org.aspectj.lang.annotation.SuppressAjWarnings;
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
+import de.cosmocode.commons.Throwables;
+import de.cosmocode.palava.core.aop.PalavaAspect;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-
-import de.cosmocode.palava.core.aop.AbstractPalavaAspect;
-
-final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
+@Aspect
+final class UnitOfWorkScopeAspect extends PalavaAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnitOfWorkScope.class);
     
@@ -35,21 +37,25 @@ final aspect UnitOfWorkScopeAspect extends AbstractPalavaAspect issingleton() {
     void setUnitOfWorkScope(UnitOfWorkScope scope) {
         this.scope = Preconditions.checkNotNull(scope, "Scope");
     }
-    
-    pointcut unitOfWork(): execution(@UnitOfWork * *.*(..));
-    
-    @SuppressAjWarnings("adviceDidNotMatch")
-    Object around(): unitOfWork() {
-        checkState();
-        LOG.trace("Handling UnitOfWorkScope at {}", thisJoinPointStaticPart);
+
+    @Around("execution(@de.cosmocode.palava.scope.UnitOfWork * *(..))")
+    public Object unitOfWork(ProceedingJoinPoint point) {
+        checkInjected();
+        LOG.trace("Handling UnitOfWorkScope at {}", point.getStaticPart());
         if (scope.inProgress()) {
             LOG.trace("UnitOfWorkScope already in progress");
-            return proceed();
+            try {
+                return point.proceed();
+            } catch (Throwable e) {
+                throw Throwables.sneakyThrow(e);
+            }
         } else {
             LOG.trace("UnitOfWorkScope not in progress");
             scope.begin();
             try {
-                return proceed();
+                return point.proceed();
+            } catch (Throwable e) {
+                throw Throwables.sneakyThrow(e);
             } finally {
                 scope.end();
             }
