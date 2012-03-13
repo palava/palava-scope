@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Aspect for {@link UnitOfWork}.
  */
 @Aspect
-final class UnitOfWorkScopeAspect extends PalavaAspect {
+public final class UnitOfWorkScopeAspect extends PalavaAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnitOfWorkScope.class);
     
