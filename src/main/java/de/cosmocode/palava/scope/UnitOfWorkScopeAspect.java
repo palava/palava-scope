@@ -26,6 +26,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Aspect for {@link UnitOfWork}.
+ */
 @Aspect
 final class UnitOfWorkScopeAspect extends PalavaAspect {
 
@@ -34,10 +37,16 @@ final class UnitOfWorkScopeAspect extends PalavaAspect {
     private UnitOfWorkScope scope;
     
     @Inject
-    void setUnitOfWorkScope(UnitOfWorkScope scope) {
+    void setScope(UnitOfWorkScope scope) {
         this.scope = Preconditions.checkNotNull(scope, "Scope");
     }
 
+    /**
+     * Advices methods annotated with {@link UnitOfWork}.
+     *
+     * @param point the proceeding join point
+     * @return the return value of the adviced join point
+     */
     @Around("execution(@de.cosmocode.palava.scope.UnitOfWork * *(..))")
     public Object unitOfWork(ProceedingJoinPoint point) {
         checkInjected();
@@ -46,7 +55,9 @@ final class UnitOfWorkScopeAspect extends PalavaAspect {
             LOG.trace("UnitOfWorkScope already in progress");
             try {
                 return point.proceed();
+            // CHECKSTYLE:OFF
             } catch (Throwable e) {
+            // CHECKSTYLE:ON
                 throw Throwables.sneakyThrow(e);
             }
         } else {
@@ -54,7 +65,9 @@ final class UnitOfWorkScopeAspect extends PalavaAspect {
             scope.begin();
             try {
                 return point.proceed();
+            // CHECKSTYLE:OFF
             } catch (Throwable e) {
+            // CHECKSTYLE:ON
                 throw Throwables.sneakyThrow(e);
             } finally {
                 scope.end();
